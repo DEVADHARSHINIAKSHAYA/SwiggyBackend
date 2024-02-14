@@ -2,6 +2,8 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const cors = require('cors')
 const mongoose = require('mongoose')
+const { ObjectId } = require('mongoose')
+
 
 const { Restaurant, Users } = require('./schema.cjs')
 
@@ -59,6 +61,31 @@ app.get('/get-restaurant-details', async function(request, response) {
         })
     }
 })
+
+app.delete('/delete-restaurant-detail/:id', async function(request, response) {
+    try {
+        const restaurant = await Restaurant.findById(request.params.id)
+        if (restaurant) {
+            await Restaurant.findByIdAndDelete(request.params.id)
+            response.status(200).json({
+                "status": "success",
+                "message": "deleted successfully"
+            })
+        } else {
+            response.status(404).json({
+                "status": "failure",
+                "message": "entry not found"
+            })
+        }
+    } catch (error) {
+        response.status(500).json({
+            "status": "failure",
+            "message": "could not delete",
+            "error": error
+        })
+    }
+})
+
 
 app.post('/create-new-user', async function(request, response) {
     try {
